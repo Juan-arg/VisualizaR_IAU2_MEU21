@@ -39,7 +39,7 @@ ggplot()+
   theme_dark()
 ```
 
-#Buscamos una base .shp del barrio de Palermo para mapear
+#Buscamos una archivo.shp del barrio de Palermo para mapear
 
 ```{r}
 PALERMO <- st_read("Palermo2.shp")%>%
@@ -58,7 +58,7 @@ head(Departamentos_CABA)
 
 ```
 
-#Acomodamos la informacion para trabajarla
+#Acomodamos la informacion para trabajarla y agreamos la columna de m2 diviendo el precio en u$d con el valor del u$d/m2
 
 ```{r}
 Departamentos_PALERMO<- Departamentos_CABA %>% 
@@ -106,7 +106,7 @@ ggplot()+
 ```
 
 
-```{r}
+```{r fig.width = 20 , fig.hight = 10}
 ggplot()+
   geom_sf(data=PALERMO, alpha=0.5)+
   geom_sf(data=GRUPO_Departamentos_PALERMO, aes(size=AMBIENTES), color="white",alpha=0.35)+
@@ -117,9 +117,155 @@ ggplot()+
          color = "AMBIENTES")
 ```
 
-
+#Obsevamos la información 
 
 ```{r}
 summary(Departamentos_PALERMO)
 ```
 
+#En un gradico facetado observamos la cantidad ofertada para cada tipologia
+
+
+```{r fig.width = 10 , fig.hight = 5}
+ggplot()+
+  geom_point(data=Departamentos_PALERMO, aes(x=PRECIO, y=M2, size=PRECIO), color="white", alpha=0.5)+
+   facet_wrap(~AMBIENTES, nrow =2)+
+   theme_dark()+
+  labs(title = "PRECIOS DE VENTA PALERMO",
+         subtitle = "Precios Según la Cantidad de Ambientes",
+         caption = "Fuente: https://www.properati.com.ar/",
+         x = "PRECIOS u$d",
+         y = "SUPERFICIE TOTAL",
+        size= "PRECIOS m2/u$d")
+```
+
+
+#Analizaremos la oferta para tipologia de 1 ambiente
+
+```{r}
+Departamentos_1AMBIENTE_PALERMO <- Departamentos_PALERMO %>% 
+  filter(AMBIENTES=="1")
+```
+
+#Observamos que el precio  promedio es de u$d 119.626 para 34.69 m2 
+
+```{r}
+summary(Departamentos_1AMBIENTE_PALERMO)
+```
+
+#Vemos la distribución estadistica de la información para departamentos de 1 ambiente
+
+```{r}
+ggplot()+
+  geom_boxplot(data=Departamentos_1AMBIENTE_PALERMO, aes(y=PRECIO, x=M2, color=PRECIO), fill="white", alpha=0.5)+
+   theme_dark()+
+    labs(title = "PRECIOS DE VENTA PALERMO",
+         subtitle = "Precios departamentos de 1 ambiente",
+         caption = "Fuente: https://www.properati.com.ar/",
+         x = "PRECIOS u$d",
+         y = "SUPERFICIE")
+```
+
+
+#Mostramos los datos espacialmente
+
+```{r fig.width = 20 , fig.hight = 10}
+ggplot()+
+  geom_sf(data=PALERMO, alpha=0.4)+
+  geom_sf(data=Departamentos_1AMBIENTE_PALERMO, aes( size=PRECIO), color="white", alpha=0.5)+
+   theme_dark()+
+    labs(title = "PRECIOS DE VENTA PALERMO",
+         subtitle = "Departamentos de 1 ambiente",
+         caption = "Fuente: https://www.properati.com.ar/",
+        size= "PRECIOS u$d")
+
+```
+
+
+
+#Analizaremos la oferta para tipologia de 2 ambientes
+
+```{r}
+Departamentos_2AMBIENTES_PALERMO <- Departamentos_PALERMO %>% 
+  filter(AMBIENTES=="2")
+```
+
+#Observamos un resumen estadistico de la oferta para esta tipologia y observamos que el precio promedio es de u$d 156.691 para 47.49 m2
+
+```{r}
+summary(Departamentos_2AMBIENTES_PALERMO)
+```
+
+#Mostramos la distribución estadistica de la oferta 
+
+```{r}
+ggplot()+
+  geom_boxplot(data=Departamentos_2AMBIENTES_PALERMO, aes(y=PRECIO, x=M2, color=PRECIO), fill="white", alpha=0.5)+
+   theme_dark()+
+    labs(title = "PRECIOS DE VENTA PALERMO",
+         subtitle = "Departamentos de 2 ambientes",
+         caption = "Fuente: https://www.properati.com.ar/",
+         x = "PRECIOS u$d",
+         y = "SUPERFICIE")
+```
+
+#Mostramos la información espacialmente
+
+```{r fig.width = 20 , fig.hight = 10}
+
+ggplot()+
+  geom_sf(data=PALERMO, alpha=0.4)+
+  geom_sf(data=Departamentos_2AMBIENTES_PALERMO, aes( size=PRECIO), color="white", alpha=0.5)+
+   theme_dark()+
+    labs(title = "PRECIOS DE VENTA PALERMO",
+         subtitle = "Departamentos de 2 ambientes",
+         caption = "Fuente: https://www.properati.com.ar/",
+         size= "PRECIOS u$d")
+
+```
+
+
+#Finalmente analizamos la tipologia de 3 ambientes
+
+```{r}
+Departamentos_3AMBIENTES_PALERMO <- Departamentos_PALERMO %>% 
+  filter(AMBIENTES=="3")
+```
+
+
+#En un resumen estadistico vemos que el precio promedio es de u$d 251.959 para 75.15m2
+
+```{r}
+summary(Departamentos_3AMBIENTES_PALERMO)
+```
+
+
+#Mostramos los distribución estadistica 
+
+```{r}
+ggplot()+
+  geom_boxplot(data=Departamentos_3AMBIENTES_PALERMO, aes(y=PRECIO, x=M2, color=PRECIO), fill="white", alpha=0.5)+
+   theme_dark()+
+    labs(title = "PRECIOS DE VENTA PALERMO",
+         subtitle = "Departamentos de 3 ambientes",
+         caption = "Fuente: https://www.properati.com.ar/",
+         x = "PRECIOS u$d",
+         y = "SUPERFICIE")
+```
+
+
+#Finalmente mostramos espacialmente la distribucón
+
+```{r fig.width = 20 , fig.hight = 10}
+ggplot()+
+  geom_sf(data=PALERMO, alpha=0.4)+
+  geom_sf(data=Departamentos_3AMBIENTES_PALERMO, aes( size=PRECIO), color="white", alpha=0.5)+
+   theme_dark()+
+    labs(title = "PRECIOS DE VENTA PALERMO",
+         subtitle = "Departamentos de 3 ambientes",
+         caption = "Fuente: https://www.properati.com.ar/",
+         size= "PRECIOS u$d")
+```
+
+
+#FINALIZAMOS EL EJERCICIO
