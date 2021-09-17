@@ -27,3 +27,99 @@ tabla <-  read_csv ("Reporte_2020.csv") %>%
   rename(c(Precio="Precio m² (USD)"))
 ```
 
+```{r fig.width = 10 , fig.hight = 7}
+ggplot()+
+  geom_point(data= tabla, aes(y=Barrio, x=Precio, size=Precio), color="gray")+
+  labs(title = "PRECIOS DE VENTA CIUDAD DE BUENOS AIRES",
+         subtitle = "Valor U$D/m2 2020",
+         caption = "Fuente: https://www.properati.com.ar/",
+         x = "PRECIOS u$d",
+         y = "BARRIOS",
+        size= "PRECIOS m2/u$d")+
+  theme_dark()
+```
+
+#Buscamos una base .shp del barrio de Palermo para mapear
+
+```{r}
+PALERMO <- st_read("Palermo2.shp")%>%
+  st_transform(crs=4326)
+```
+
+#Buscamos la base actualizada de precios con base enero 2021
+
+```{r}
+Departamentos_CABA <- st_read ("210129_Deptos_Vta_Anual_2020.shp") %>%
+  st_transform(crs=4326)
+```
+
+```{r}
+head(Departamentos_CABA)
+
+```
+
+#Acomodamos la informacion para trabajarla
+
+```{r}
+Departamentos_PALERMO<- Departamentos_CABA %>% 
+  filter(Barrio=="PALERMO", Ambientes<5, Ambientes>0, Dolares <500000, Dolares>30) %>%
+    mutate(M2=Dolares/DolaresM2) %>% 
+    select(Direccion, Ambientes, Dolares, DolaresM2, M2, geometry) %>% 
+    rename(c(PRECIO="Dolares", AMBIENTES= "Ambientes")) 
+```
+
+
+
+```{r fig.width = 20 , fig.hight = 10}
+
+ggplot()+
+  geom_sf(data=PALERMO, alpha=0.5)+
+  geom_sf(data=Departamentos_PALERMO, aes(color=AMBIENTES, size=PRECIO), alpha=0.3)+
+   theme_dark()+
+    labs(title = "DEPARTAMENTOS EN VENTA PALERMO Marzo 2020",
+         subtitle = "Distribucion Espacial",
+         caption = "Fuente: https://www.properati.com.ar/",
+         color = "AMBIENTES",
+         size= "PRECIOS U$D")
+
+```
+
+#Agrupamos los departamentos por ambientes para observar cual es la mayor tipologia ofertada para esta barrio
+
+
+```{r}
+GRUPO_Departamentos_PALERMO <- Departamentos_PALERMO %>% 
+    group_by(AMBIENTES) %>% 
+    summarise(cantidad = n())
+head(GRUPO_Departamentos_PALERMO)
+```
+
+#Lo mostramos en un grafico de columnas y tambien espacialmente
+
+```{r}
+ggplot()+
+  geom_col(data=GRUPO_Departamentos_PALERMO, aes(y=cantidad, x=AMBIENTES), fill="gray")+
+   theme_dark()+
+    labs(title = "DEPARTAMENTOS EN VENTA PALERMO",
+         subtitle = "Tipologias de 1, 2, 3 y 4 AMBIENTES",
+         caption = "Fuente: https://www.properati.com.ar/")
+```
+
+
+```{r}
+ggplot()+
+  geom_sf(data=PALERMO, alpha=0.5)+
+  geom_sf(data=GRUPO_Departamentos_PALERMO, aes(size=AMBIENTES), color="white",alpha=0.35)+
+   theme_dark()+
+    labs(title = "DEPARTAMENTOS EN VENTA EN CIUDAD DE BUENOS AIRES",
+         subtitle = "PALERMO 2020",
+         caption = "Fuente: https://www.properati.com.ar/",
+         color = "AMBIENTES")
+```
+
+
+
+```{r}
+summary(Departamentos_PALERMO)
+```
+
