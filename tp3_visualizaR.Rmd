@@ -1,0 +1,29 @@
+---
+title: "Tp3_VisualizaR"
+author: "Juan Vargas"
+date: "17/9/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(sf) 
+library(readxl)
+library(leaflet)
+library(osmdata)
+library(usethis)
+library(skimr)
+library(zip)
+options(scipen = 999)
+```
+
+#Analizaramos la oferta de departamentos para el barrio porteño de Palermo, la mostraremos cuantitativa y espacialmente.
+
+#Comenzamos cargando la información de toda la CABA para observar en posicion se encuentra el valor promedio del m2 en Palermo respecto a los otros barrios. 
+
+
+```{r}
+tabla <-  read_csv ("Reporte_2020.csv") %>% 
+  rename(c(Precio="Precio m² (USD)"))
+```
+
